@@ -94,30 +94,35 @@ router.get("/getallusers", async (req, res) => {
 //     .json({ msg: `${req.body.name} has been added to the database` });
 // });
 
-// delete one user
-router.delete("/:name", async (req, res) => {
-  const user = await User.destroy({ name: req.body.name });
+// ===============================delete one user ==================================================
+router.delete("/:id", async (req, res) => {
+  // const user = await User.destroy({ where: { id: req.params.id } });
+  const user = await User.destroy({ where: { id: req.params.id } });
+
   res
     .status(200)
-    .json({ msg: `${req.body.name} has been deleted from the database` });
+    .json({ msg: `${req.params.id} has been deleted from the database` });
 });
 
-// get a single user
+// get a single user. using params returns parameters from database
 router.get("/:id", async (req, res) => {
-  const user = await User.findOne({ where: { name: req.body.id } });
-  res.status(200).json({ msg: `Here is ${req.body.name}, ${req.body.id}` });
+  console.log(req);
+  const user = await User.findOne({ where: { id: req.params.id } });
+  res.status(200).json({ msg: `Here is ${user.name}, his id is ${user.id}` });
 });
 
 // update a single user
 router.put("/:id", async (req, res) => {
-  const user = await User.findOne({ name: req.body.id });
-
-  //alter id?
-  res.status(200).json({ msg: "worked" });
+  const updatedUser = await User.update(
+    { name: req.body.name },
+    { where: { id: req.params.id } }
+  );
+  res.status(200).json({ msg: updatedUser });
 });
 
 // delete all users
-router.delete("/:id", async (req, res) => {
+router.delete("/deleteall", async (req, res) => {
+  const user = await User.destroy({});
   res.status(200).json({ msg: "worked" });
 });
 

@@ -15,7 +15,7 @@ const register = async (name, password, next) => {
       throw new Error("User info is missing");
     }
     //creates salt to hash password
-    const salt = await bcypt.genSalt(parseInt(process.env.SALT_ROUNDS));
+    const salt = await bcrypt.genSalt(parseInt(process.env.SALT_ROUNDS));
 
     //hash password
     const passwordHash = await bcrypt.hash(password, salt);
@@ -32,7 +32,7 @@ const register = async (name, password, next) => {
     } catch (error) {
       next(error, {});
     }
-  } catch {
+  } catch (error) {
     next(error);
   }
 };

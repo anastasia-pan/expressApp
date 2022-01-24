@@ -12,6 +12,10 @@ const User = connection.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    update: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   { indexed: [{ unique: true, fields: ["name"] }] }
 );
