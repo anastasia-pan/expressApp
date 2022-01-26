@@ -3,7 +3,7 @@ const LocalStrategy = require("passport-local").Strategy;
 const ExtractJWT = require("passport-jwt").ExtractJwt;
 const JWTStrategy = require("passport-jwt").Strategy;
 
-const User = require("../models/user");
+const { User } = require("../models/user");
 
 //keys that exist within passportlocal, you need to call the below in their specific name
 const mappings = { usernameField: "name", passwordField: "password" };

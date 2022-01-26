@@ -2,10 +2,11 @@ require("dotenv").config();
 
 const express = require("express");
 const passport = require("passport");
+const cors = require("cors");
 
 const connection = require("./connection");
 
-const User = require("./models/user");
+const { User, Book, Subscription } = require("./models/user");
 const userRouter = require("./routes/user");
 const {
   registerStrategy,
@@ -17,6 +18,10 @@ const app = express();
 
 app.use(express.json());
 // app.use(passport.initialize());
+
+//cors provides a way for backend and front ent to run from the same port and therefore
+//be single-origin (npm install cors)
+app.use(cors());
 
 //provides routes
 app.use("/user", userRouter);
@@ -33,5 +38,7 @@ app.get("/", (req, res) => {
 app.listen(process.env.PORT, () => {
   connection.authenticate();
   User.sync({ alter: true });
+  Book.sync({ alter: true });
+  Subscription.sync({ alter: true });
   console.log("App is online");
 });

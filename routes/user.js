@@ -3,7 +3,8 @@ const router = require("express").Router();
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 
-const User = require("../models/user");
+const { User, Book, Subscription } = require("../models/user");
+
 // const hash = require("../hash.js");
 const saltRounds = parseInt(process.env.SALT_ROUNDS);
 
@@ -49,7 +50,7 @@ const login = async (req, res, next) => {
       if (error) {
         res.status(500).json({ message: "Internal Server Error" });
       } else if (!user) {
-        res.status(401).json(info);
+        res.status(401).json({ msg: `User ${user} does not exist` });
       } else {
         const loginFn = (error) => {
           if (error) {
@@ -73,9 +74,9 @@ const login = async (req, res, next) => {
   })(req, res, next); //IFFY Immediately invoked function expression
 };
 
-router.post("/userlogin", login);
+router.post("/login", login);
 
-//=============================================== tbd ============================================//
+//=============================================== get all users ============================================//
 
 // get all users
 router.get("/getallusers", async (req, res) => {
@@ -104,26 +105,93 @@ router.delete("/:id", async (req, res) => {
     .json({ msg: `${req.params.id} has been deleted from the database` });
 });
 
-// get a single user. using params returns parameters from database
+//===================================== fetch one user ======================================//
 router.get("/:id", async (req, res) => {
   console.log(req);
   const user = await User.findOne({ where: { id: req.params.id } });
-  res.status(200).json({ msg: `Here is ${user.name}, his id is ${user.id}` });
+  res.status(200).json({ msg: user });
 });
 
-// update a single user
+//===================================== update user ======================================//
+//body sends entire object which replaces original user
 router.put("/:id", async (req, res) => {
-  const updatedUser = await User.update(
-    { name: req.body.name },
-    { where: { id: req.params.id } }
-  );
+  const updatedUser = await User.update(req.body, {
+    where: { id: req.params.id },
+  });
   res.status(200).json({ msg: updatedUser });
 });
 
-// delete all users
+router.patch("/:id", async (req, res) => {
+  const updatedUser = await User.update(
+    { name: req.body.name },
+    {
+      where: { id: req.params.id },
+    }
+  );
+  res.status(200).json({ msg: req.params.id });
+});
+
+//===================================== delete all ======================================//
 router.delete("/deleteall", async (req, res) => {
-  const user = await User.destroy({});
+  const user = await User.destroy({ where: {}, truncate: true });
   res.status(200).json({ msg: "worked" });
+});
+
+module.exports = router;
+
+//===================================== add book ======================================//
+//a route to add a book to books table
+router.post("/addbook", async (req, res) => {
+  const book = await Book.create({
+    title: req.body.title,
+    author: req.body.author,
+  });
+  res.status(200).json({ msg: book });
+});
+
+// ===============================delete one book ==================================================
+router.delete("/book/:id", async (req, res) => {
+  // const user = await User.destroy({ where: { id: req.params.id } });
+  const book = await Book.destroy({ where: { id: req.params.id } });
+
+  res
+    .status(200)
+    .json({ msg: `${req.params.id} has been deleted from the database` });
+});
+
+//===================================== get one book ======================================//
+router.get("/book/:title", async (req, res) => {
+  const book = await Book.findOne({ where: { title: req.params.title } });
+  res.status(200).json(book);
+});
+
+//===================================== add one subscription ======================================//
+router.post("/:id/sub/:bookid", async (req, res) => {
+  const desiredbook = await Book.findOne({ where: { id: req.params.bookid } });
+  const subscription = await Subscription.create({
+    user_id: req.params.id,
+    book_id: desiredbook.id,
+    book_title: desiredbook.title,
+    book_author: desiredbook.author,
+  });
+  res.status(201).json({ subscription });
+});
+
+//===================================== find all subscriptions  ======================================//
+router.get("/:id/sub/", async (req, res) => {
+  const allsubs = await Subscription.findAll({
+    where: { user_id: req.params.id },
+  });
+  res.status(200).json(allsubs);
+});
+
+//===================================== delete one subscription ======================================//
+router.delete("/:id/sub/:bookid", async (req, res) => {
+  await Subscription.destroy({
+    where: { book_id: req.params.bookid },
+  });
+
+  res.status(200).json({ msg: "done" });
 });
 
 module.exports = router;
