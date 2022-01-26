@@ -158,6 +158,11 @@ router.delete("/book/:id", async (req, res) => {
     .status(200)
     .json({ msg: `${req.params.id} has been deleted from the database` });
 });
+//===================================== find all books ======================================//
+router.get("/book/getall", async (req, res) => {
+  const allBooks = await Book.findAll({});
+  res.status(200).json(allBooks);
+});
 
 //===================================== get one book ======================================//
 router.get("/book/:title", async (req, res) => {
@@ -166,8 +171,10 @@ router.get("/book/:title", async (req, res) => {
 });
 
 //===================================== add one subscription ======================================//
-router.post("/:id/sub/:bookid", async (req, res) => {
-  const desiredbook = await Book.findOne({ where: { id: req.params.bookid } });
+router.post("/:id/sub/:title", async (req, res) => {
+  const desiredbook = await Book.findOne({
+    where: { title: req.body.title },
+  });
   const subscription = await Subscription.create({
     user_id: req.params.id,
     book_id: desiredbook.id,
@@ -178,7 +185,7 @@ router.post("/:id/sub/:bookid", async (req, res) => {
 });
 
 //===================================== find all subscriptions  ======================================//
-router.get("/:id/sub/", async (req, res) => {
+router.get("/:id/sub", async (req, res) => {
   const allsubs = await Subscription.findAll({
     where: { user_id: req.params.id },
   });
