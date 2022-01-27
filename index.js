@@ -8,6 +8,8 @@ const connection = require("./connection");
 
 const { User, Book, Subscription } = require("./models/user");
 const userRouter = require("./routes/user");
+const bookRouter = require("./routes/book");
+const subRouter = require("./routes/sub");
 const {
   registerStrategy,
   loginStrategy,
@@ -25,6 +27,8 @@ app.use(cors());
 
 //provides routes
 app.use("/user", userRouter);
+app.use("/book", bookRouter);
+app.use("/sub", subRouter);
 
 //require string and registersstrategy
 passport.use("register", registerStrategy);
