@@ -1,4 +1,20 @@
 const { Sequelize } = require("sequelize");
-const connection = new Sequelize(process.env.DB_URI);
+
+let connection;
+
+if (process.env.NODE_ENV === "PRODUCTION") {
+  connection = new Sequelize(`${process.env.DATABASE_URL}?sslmode=require`, {
+    url: process.env.DATABASE_URI,
+    dialect: "postgress",
+    dialectOptions: {
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    },
+  });
+} else {
+  connection = new Sequelize(process.env.DB_URI);
+  console.log("DB connection successful");
+}
 
 module.exports = connection;
