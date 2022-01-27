@@ -3,13 +3,10 @@ const router = require("express").Router();
 
 //===================================== add one subscription ======================================//
 router.post("/:id/", async (req, res) => {
-  try {
-    const desiredbook = await Book.findOne({
-      where: { id: req.body.id },
-    });
-  } catch (error) {
-    console.log("book doesn't exist", error);
-  }
+  const desiredbook = await Book.findOne({
+    where: { title: req.body.title },
+  });
+
   const subscription = await Subscription.create({
     user_id: req.params.id,
     book_id: desiredbook.id,
