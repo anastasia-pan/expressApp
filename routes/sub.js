@@ -2,10 +2,14 @@ const { User, Book, Subscription } = require("../models/user");
 const router = require("express").Router();
 
 //===================================== add one subscription ======================================//
-router.post("/:id/:title", async (req, res) => {
-  const desiredbook = await Book.findOne({
-    where: { title: req.body.title },
-  });
+router.post("/:id/", async (req, res) => {
+  try {
+    const desiredbook = await Book.findOne({
+      where: { id: req.body.id },
+    });
+  } catch (error) {
+    console.log("book doesn't exist", error);
+  }
   const subscription = await Subscription.create({
     user_id: req.params.id,
     book_id: desiredbook.id,

@@ -11,9 +11,15 @@ router.post("/addbook", async (req, res) => {
   res.status(200).json({ msg: book });
 });
 
+//===================================== find all books ======================================//
+router.get("/getall", async (req, res) => {
+  const allBooks = await Book.findAll({});
+  res.status(200).json({ books: allBooks });
+});
+
 //===================================== get one book ======================================//
-router.get("/:title", async (req, res) => {
-  const book = await Book.findOne({ where: { title: req.params.title } });
+router.get("/", async (req, res) => {
+  const book = await Book.findOne({ where: { title: req.body.title } });
   res.status(200).json(book);
 });
 
@@ -25,11 +31,6 @@ router.delete("/:id", async (req, res) => {
   res
     .status(200)
     .json({ msg: `${req.params.id} has been deleted from the database` });
-});
-//===================================== find all books ======================================//
-router.get("/getall", async (req, res) => {
-  const allBooks = await Book.findAll({});
-  res.status(200).json(allBooks);
 });
 
 module.exports = router;
