@@ -9,6 +9,13 @@ const User = connection.define(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      get() {
+        const rawValue = this.getDataValue("name");
+        return firstUpper(rawValue);
+      },
+      set(value) {
+        this.setDataValue("name", setLower(value));
+      },
     },
     passwordHash: {
       type: DataTypes.STRING,
