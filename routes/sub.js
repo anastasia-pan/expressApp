@@ -1,5 +1,6 @@
 const { User, Book, Subscription } = require("../models/user");
 const router = require("express").Router();
+const { Sequelize, DataTypes } = require("sequelize");
 
 //===================================== add one subscription ======================================//
 router.post("/:id/", async (req, res) => {
@@ -13,7 +14,11 @@ router.post("/:id/", async (req, res) => {
     book_title: desiredbook.title,
     book_author: desiredbook.author,
   });
-  res.status(201).json({ subscription });
+
+  const list = await Subscription.findAll({
+    where: { user_id: req.params.id },
+  });
+  res.status(201).json(list);
 });
 
 //===================================== find all subscriptions  ======================================//
@@ -27,10 +32,16 @@ router.get("/:id", async (req, res) => {
 //===================================== delete one subscription ======================================//
 router.delete("/:id/:bookid", async (req, res) => {
   await Subscription.destroy({
-    where: { book_id: req.params.bookid },
+    where: Sequelize.and(
+      { user_id: req.params.id },
+      { book_id: req.params.bookid }
+    ),
+  });
+  const data = await Subscription.findAll({
+    where: { user_id: req.params.id },
   });
 
-  res.status(200).json({ msg: "done" });
+  res.status(200).json(data);
 });
 
 module.exports = router;
