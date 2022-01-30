@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prestart": "docker run --rm --name master32-mysql -dp 3306:3306 -v mysql-config:/etc -v mysql-data:/var/lib/mysql mysql/mysql-server:latest && sleep 5",
+    "localdb": "docker run --rm --name master32-mysql -dp 3306:3306 -v mysql-config:/etc -v mysql-data:/var/lib/mysql mysql/mysql-server:latest && sleep 5",
     "start": "./node_modules/nodemon/bin/nodemon.js index.js",
     "poststart": "docker stop master32-mysql",
     "test": "echo \"Error: no test specified\" && exit 1"
